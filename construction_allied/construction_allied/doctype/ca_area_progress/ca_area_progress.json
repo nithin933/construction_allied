@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-26 10:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "area_sqm",
+  "cumulative_sqm",
+  "supervisor",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "area_sqm",
+   "fieldtype": "Float",
+   "label": "Area (sqm)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cumulative_sqm",
+   "fieldtype": "Float",
+   "label": "Cumulative (sqm)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supervisor",
+   "fieldtype": "Link",
+   "label": "Supervisor",
+   "options": "Employee",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-26 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Allied",
+ "name": "CA Area Progress",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "permlevel": 0,
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "CA Manager",
+   "permlevel": 0,
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "CA Site Supervisor",
+   "permlevel": 0,
+   "read": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

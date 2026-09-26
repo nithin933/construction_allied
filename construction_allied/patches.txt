@@ -1,0 +1,5 @@
+# No patches for construction_allied v1.
+#
+# NOTE: this bench's mstartnew `update_app` DOES run app patches automatically.
+# Any future patch added here MUST therefore be idempotent (exists-check before
+# insert/update), because it may execute on every subsequent deploy.

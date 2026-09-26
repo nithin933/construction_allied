@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-26 10:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "category",
+  "target_percent",
+  "planned_amount",
+  "actual_amount",
+  "variance"
+ ],
+ "fields": [
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "Material\nLabor\nOther",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "target_percent",
+   "fieldtype": "Percent",
+   "label": "Target %",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "planned_amount",
+   "fieldtype": "Currency",
+   "label": "Planned Amount",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "actual_amount",
+   "fieldtype": "Currency",
+   "label": "Actual Amount",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "variance",
+   "fieldtype": "Currency",
+   "label": "Variance",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-26 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Allied",
+ "name": "CA Budget Line",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "permlevel": 0,
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "CA Manager",
+   "permlevel": 0,
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
