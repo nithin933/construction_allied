@@ -194,12 +194,18 @@ def _items_and_customer(summary):
             _log(summary, "created", f"Item Price:{price_key}")
 
     # 7. Customer ----------------------------------------------------------
+    # NOTE (site customization on test18): Property Setter
+    # `Customer-disabled-default` sets the `disabled` default to 1, and tsgc's
+    # before_insert hook `disable_customer` forces disabled=1 for users without the
+    # "Management" role. The demo must be a usable party, so set disabled=0
+    # explicitly (Administrator holds Management, so the hook is a no-op here).
     _ensure_simple(summary, "Customer", DEMO_CUSTOMER, lambda: {
         "doctype": "Customer",
         "customer_name": DEMO_CUSTOMER,
         "customer_type": "Company",
         "customer_group": DEMO_CUSTOMER_GROUP,
         "territory": DEMO_TERRITORY,
+        "disabled": 0,
     })
 
 
