@@ -76,13 +76,20 @@ the app complete (`set_all_patches_as_completed`), so seeding must be invoked
 explicitly. It is idempotent — re-running it creates nothing new.
 
 ```bash
-bench --site test18.m-fractal.com execute construction_allied.seed.seed_demo
+bench --site test18.m-fractal.com execute "frappe.get_attr(\"construction_allied.seed.seed_demo\")"
 ```
+
+> **Invocation form matters on this bench.** The bare dotted form
+> `bench execute construction_allied.seed.seed_demo` fails with
+> `NameError` (the CLI tries to import the literal `construction_allied.seed.seed_demo`
+> path); wrapping it in `frappe.get_attr(...)` and quoting the whole expression is
+> the working form.
 
 It prints a `{created, skipped}` summary. What it creates:
 
-- UOM `Sqm`; Item Group `All Item Groups` + `CA Services`; Price List
-  `Standard Selling` (AED); Customer Group / Territory roots.
+- UOM `Sqm`; Item Group `All Item Groups` (root) + `CA Services` (leaf); Price
+  List `Standard Selling` (AED); Customer Group `All Customer Groups` (root) +
+  `CA Customers` (leaf); Territory root `All Territories`.
 - Company `Fix and Fine Technical Service LLC` (abbr `FFTS`, AED, UAE, chart
   `Standard` — the standard chart auto-builds the accounting skeleton).
 - Items `CA-TILE-FIX`, `CA-WATERPROOF`, `CA-GENERAL` (services, `Sqm`) with
@@ -125,6 +132,7 @@ run again on every deploy.
 3. Delete `ca_*` Custom Fields by name (Lead ×2, Quotation ×2, Project ~24) → `clear-cache`.
 4. `doc_events` are removed only by app uninstall; full teardown =
    `uninstall-app construction_allied` (+ `bench restart`).
-5. Seed artifacts: transactions → customer → items → masters (Company may be left as harmless master data,
-   stated explicitly).
+5. Seed artifacts: transactions → customer → items → masters (Customer Group
+   `CA Customers`, then its parent `All Customer Groups`; Company may be left as
+   harmless master data, stated explicitly).
 6. Delete/disable the temp recording user. 7. `clear-cache` (+ restart if `doc_events` changed).

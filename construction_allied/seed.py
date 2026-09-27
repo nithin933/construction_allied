@@ -3,9 +3,11 @@
 
 """Idempotent demo seed for the Construction Allied pilot.
 
-Invoke explicitly (NOT a patch — a fresh install marks all patches complete):
+Invoke explicitly (NOT a patch — a fresh install marks all patches complete).
+On this bench the bare dotted form fails with ``NameError``; wrap it in
+``frappe.get_attr``:
 
-    bench --site <site> execute construction_allied.seed.seed_demo
+    bench --site <site> execute "frappe.get_attr(\"construction_allied.seed.seed_demo\")"
 
 Every step is query-before-insert, so a second run creates nothing new.
 The function never modifies an existing record and never touches
@@ -19,7 +21,10 @@ from frappe.utils import add_days, today
 DEMO_COMPANY = "Fix and Fine Technical Service LLC"
 DEMO_ABBR = "FFTS"
 DEMO_CUSTOMER = "Al Bahr Facilities Management LLC"
-DEMO_CUSTOMER_GROUP = "All Customer Groups"
+# ``All Customer Groups`` is the tree ROOT (is_group=1); Customers must link to a
+# LEAF, so the demo uses its own leaf ``CA Customers`` beneath that root.
+DEMO_CUSTOMER_GROUP_ROOT = "All Customer Groups"
+DEMO_CUSTOMER_GROUP = "CA Customers"
 DEMO_TERRITORY = "All Territories"
 PRICE_LIST = "Standard Selling"
 ITEM_GROUP_ROOT = "All Item Groups"
@@ -61,6 +66,23 @@ def _ensure_simple(summary, doctype, key, build):
     return True
 
 
+def _assert_leaf(doctype, name, field):
+    """Fail loudly unless ``name`` is a leaf (is_group=0) node of ``doctype``.
+
+    Some ERPNext Link fields point at a taxonomy whose tree ROOT is a group and
+    whose leaves are the only legal targets. The canonical case is
+    ``Customer.validate_customer_group`` (erpnext/selling/doctype/customer/customer.py),
+    which throws "Cannot select a Group type Customer Group. Please select a
+    non-group Customer Group." A misconfigured constant would otherwise only fail
+    deep inside that hook; asserting here names the offender in one line.
+    """
+    if frappe.db.get_value(doctype, name, "is_group"):
+        frappe.throw(
+            f"{field}: {doctype} '{name}' is a group (is_group=1) but this Link "
+            f"field requires a leaf (is_group=0)."
+        )
+
+
 # --------------------------------------------------------------------------
 # steps
 # --------------------------------------------------------------------------
@@ -80,6 +102,9 @@ def _masters(summary):
         "parent_item_group": ITEM_GROUP_ROOT,
         "is_group": 0,
     })
+    # ERPNext does not validate a leaf Item Group for Item.item_group, but the
+    # seed deliberately keeps taxonomy links on leaves; assert that intent holds.
+    _assert_leaf("Item Group", ITEM_GROUP, "Item.item_group")
 
     # 3. Price List --------------------------------------------------------
     _ensure_simple(summary, "Price List", PRICE_LIST, lambda: {
@@ -90,16 +115,28 @@ def _masters(summary):
     })
 
     # 4. Customer Group / Territory roots ---------------------------------
+    _ensure_simple(summary, "Customer Group", DEMO_CUSTOMER_GROUP_ROOT, lambda: {
+        "doctype": "Customer Group",
+        "customer_group_name": DEMO_CUSTOMER_GROUP_ROOT,
+        "is_group": 1,
+    })
+    # Leaf beneath the root: Customer.customer_group must be a leaf, because
+    # Customer.validate_customer_group (erpnext customer.py) rejects any group
+    # node with "Cannot select a Group type Customer Group".
     _ensure_simple(summary, "Customer Group", DEMO_CUSTOMER_GROUP, lambda: {
         "doctype": "Customer Group",
         "customer_group_name": DEMO_CUSTOMER_GROUP,
-        "is_group": 1,
+        "parent_customer_group": DEMO_CUSTOMER_GROUP_ROOT,
+        "is_group": 0,
     })
+    _assert_leaf("Customer Group", DEMO_CUSTOMER_GROUP, "Customer.customer_group")
     _ensure_simple(summary, "Territory", DEMO_TERRITORY, lambda: {
         "doctype": "Territory",
         "territory_name": DEMO_TERRITORY,
         "is_group": 1,
     })
+    # Customer.territory has NO leaf requirement in ERPNext (no validate_territory),
+    # so the group root "All Territories" is a legal target here.
 
 
 def _company(summary):
